@@ -1,8 +1,0 @@
-GET http://localhost:8000/users
-Authorization: Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhbGciOiJIUzUxMiIsImF1ZCI6ImxvY2FsLmFwcCIsImV4cCI6MTczNjkyOTY2MCwiaXNzIjoibG9jYWwuZGV2ZWxvcGVyIiwibmJmIjoxNzM2OTI2MDYwLCJyb2xlcyI6WyJyZWFkZXIiXX0._YJfPrS8gh_8hKnE2BsKhljI4qkdw5eUHBpmaI8OuvCAsg2CrLBh4ihe8UaovTN0NkW7gCK_S23I5t0InuYdgw
-
-#
-#   Update token before running!
-#   Line order is read by curl.test.sh so you cannot change order without updating script.
-#   Creating automation around this is out-of-the-scope due to time limit
-#

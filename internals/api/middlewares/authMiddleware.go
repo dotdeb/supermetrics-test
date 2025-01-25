@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/dotdeb/supermetrics-test/internals/configs"
+	"github.com/dotdeb/supermetrics-test/internals/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
 )
@@ -19,16 +20,18 @@ type ApiClaims struct {
 // but pass them to controllers via context.
 func BearerAuthMiddleware(system configs.Jwt) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		id := utils.CallId(c)
+
 		userToken, err := parseBearer(c.GetHeader("Authorization"))
 		if err != nil {
-			fmt.Println(err.Error())
+			fmt.Println(id+":", err.Error())
 			c.AbortWithStatusJSON(401, gin.H{"message": "Invalid API key"})
 			return
 		}
 
 		token, err := parseToken(userToken, []byte(system.ApiSecret))
 		if err != nil {
-			fmt.Println(err.Error())
+			fmt.Println(id+":", err.Error())
 			c.AbortWithStatusJSON(401, gin.H{"message": "Invalid API key"})
 			return
 		}

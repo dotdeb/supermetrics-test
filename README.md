@@ -28,18 +28,11 @@ Application uses very simple folder-structure.
 
 ## Development
 
+Initialize local environment by running [init_localenv.go](./tools/init_localenv.go) (run in tools-path).
+
+
 ### To run application directly 
-
-Add .env-file with content (or add them to environment variables)
-```
-API_SECRET=<insert-key-here>
-JWT_ISSUER=local.developer
-JWT_AUDIENCE=local.app
-PORT=8000
-TIMEOUT_SEC=5
-```
-Do not change order of the file as automation uses line order(to time to make it more fluent)
-
+ 
 Run commands:<br> 
 `go mod download`<br>
 `go run .`

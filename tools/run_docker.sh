@@ -1,6 +1,5 @@
 #
-#   Run dockerfile. Notice that if you are useing createTestToken.go script to create 
-#   test token you need to check issuer,audience & secret as they are not guaranteed to be same
+#   Run dockerfile.
 #
 
 DockerfilePath=.
@@ -37,11 +36,11 @@ fi
 #
 #   Read data from the .env file. This should be more automated.
 #
-SECRET=$(sed -n '1p' < $DotenvPath/.env)
-ISSUER=$(sed -n '2p' < $DotenvPath/.env)
-AUDIENCE=$(sed -n '3p' < $DotenvPath/.env)
-PORT=$(sed -n '4p' < $DotenvPath/.env)
-TIMEOUT_SEC=$(sed -n '5p' < $DotenvPath/.env)
+SECRET=$(sed -n -e '/^API_SECRET=/p' $DotenvPath/.env)
+ISSUER=$(sed -n -e '/^JWT_ISSUER=/p' $DotenvPath/.env)
+AUDIENCE=$(sed -n -e '/^JWT_AUDIENCE=/p' $DotenvPath/.env)
+PORT=$(sed -n -e '/^PORT=/p' $DotenvPath/.env)
+TIMEOUT_SEC=$(sed -n -e '/^TIMEOUT_SEC=/p' $DotenvPath/.env)
 
 docker build --progress plain --tag homework $DockerfilePath
 docker run -p 8000:8000 \

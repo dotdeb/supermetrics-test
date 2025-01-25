@@ -3,15 +3,22 @@ package middlewares
 import (
 	"fmt"
 
+	"github.com/google/uuid"
+
 	"github.com/dotdeb/supermetrics-test/internals/data"
+	"github.com/dotdeb/supermetrics-test/internals/utils"
 	"github.com/gin-gonic/gin"
 )
 
-// Log api calls.
+// Log api calls & create identifier for call to be identified in every step
 // Currently logs are not used.
 func LoggingMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		fmt.Println("Api call:", c.Request.Host+c.Request.URL.Path, " auth:", c.GetHeader("Authorization")[:10])
+		id := uuid.New().String()
+		c.Set(utils.LOG_ID, id)
+		c.Writer.Header().Add("trace", id) // Trace is used to trace logs for single call
+
+		fmt.Println(id+":", c.Request.Host+c.Request.URL.Path)
 		c.Next()
 	}
 }
@@ -20,7 +27,12 @@ func LoggingMiddleware() gin.HandlerFunc {
 // This ensures that database access is limited for controllers via router.
 func UserReadMiddleware(db data.Database) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		c.Set("fetch_db_users", db.GetUsers)
+		id, _ := c.Get(utils.LOG_ID)
+		if db == nil {
+			fmt.Println(id.(string)+":", "Database is nil")
+		}
+
+		c.Set(utils.GET_USERS_FUNC, db.GetUsers)
 		c.Next()
 	}
 }
