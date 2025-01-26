@@ -1,9 +1,8 @@
 package middlewares
 
 import (
-	"fmt"
-
 	"github.com/google/uuid"
+	"github.com/rs/zerolog/log"
 
 	"github.com/dotdeb/supermetrics-test/internals/data"
 	"github.com/dotdeb/supermetrics-test/internals/utils"
@@ -18,7 +17,7 @@ func LoggingMiddleware() gin.HandlerFunc {
 		c.Set(utils.LOG_ID, id)
 		c.Writer.Header().Add("trace", id) // Trace is used to trace logs for single call
 
-		fmt.Println(id+":", c.Request.Host+c.Request.URL.Path)
+		log.Info().Str("id", id).Msg(c.Request.Host + c.Request.URL.Path)
 		c.Next()
 	}
 }
@@ -29,7 +28,7 @@ func UserReadMiddleware(db data.Database) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id, _ := c.Get(utils.LOG_ID)
 		if db == nil {
-			fmt.Println(id.(string)+":", "Database is nil")
+			log.Error().Str("id", id.(string)).Msg("Database is nil")
 		}
 
 		c.Set(utils.GET_USERS_FUNC, db.GetUsers)

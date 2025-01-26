@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/dotdeb/supermetrics-test/internals/data"
+	"github.com/dotdeb/supermetrics-test/internals/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -18,8 +19,9 @@ func TestSuccess(t *testing.T) {
 	w := httptest.NewRecorder()
 	c, _ := gin.CreateTestContext(w)
 
-	c.Set("user_roles", []string{"reader"})
-	c.Set("fetch_db_users", func() []data.User {
+	c.Set(utils.LOG_ID, "unittest")
+	c.Set(utils.CALLER_USER_ROLE, []string{"reader"})
+	c.Set(utils.GET_USERS_FUNC, func() []data.User {
 		return []data.User{
 			{
 				Id:       "1",
@@ -49,7 +51,8 @@ func TestWrongRole(t *testing.T) {
 	w := httptest.NewRecorder()
 	c, _ := gin.CreateTestContext(w)
 
-	c.Set("user_roles", []string{"writer"})
+	c.Set(utils.LOG_ID, "unittest")
+	c.Set(utils.CALLER_USER_ROLE, []string{"writer"})
 	GetUsers(c)
 	if w.Code != 403 {
 		t.Error(w.Code, "Wrong user role is passing")
@@ -60,7 +63,8 @@ func TestEmptyRole(t *testing.T) {
 	w := httptest.NewRecorder()
 	c, _ := gin.CreateTestContext(w)
 
-	c.Set("user_roles", []string{""})
+	c.Set(utils.LOG_ID, "unittest")
+	c.Set(utils.CALLER_USER_ROLE, []string{""})
 	GetUsers(c)
 	if w.Code != 403 {
 		t.Error(w.Code, "Empty user role is passing")

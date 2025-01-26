@@ -6,27 +6,28 @@ import (
 	"github.com/dotdeb/supermetrics-test/internals/data"
 	"github.com/dotdeb/supermetrics-test/internals/utils"
 	"github.com/gin-gonic/gin"
+
+	"github.com/rs/zerolog/log"
 )
 
 func GetUsers(ctx *gin.Context) {
-	id_tmp, _ := ctx.Get(utils.LOG_ID)
-	id := id_tmp.(string) + ":"
+	id := utils.CallId(ctx)
 
 	isReader, err := isReader(ctx)
 	if err != nil {
-		fmt.Println(id, err.Error())
+		log.Error().Str("id", id).Msg(err.Error())
 		ctx.AbortWithStatusJSON(500, gin.H{"Internal server error": err.Error()})
 		return
 	}
 	if !isReader {
-		fmt.Println(id, "is not reader")
+		log.Info().Str("id", id).Msg("is not reader")
 		ctx.AbortWithStatusJSON(403, gin.H{"error": "Forbidden. Insufficient Permissions"})
 		return
 	}
 
 	users, exists := ctx.Get(utils.GET_USERS_FUNC)
 	if !exists {
-		fmt.Println(id, "utils.GET_USERS_FUNC is empty")
+		log.Error().Str("id", id).Msg("utils.GET_USERS_FUNC is empty")
 		ctx.AbortWithStatusJSON(500, gin.H{"Internal server error": "Cannot query database"})
 		return
 	}

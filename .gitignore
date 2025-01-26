@@ -1,3 +1,5 @@
 .env
 **/bin/
 tools/*.http
+*.pem
+tmp/

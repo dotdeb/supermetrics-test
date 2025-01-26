@@ -32,6 +32,8 @@ Initialize local environment by running [init_localenv.go](./tools/init_localenv
 
 
 ### To run application directly 
+
+You can use script [run.sh](./tools/run.sh) but https://github.com/air-verse/air is required.
  
 Run commands:<br> 
 `go mod download`<br>

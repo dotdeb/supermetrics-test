@@ -41,12 +41,15 @@ ISSUER=$(sed -n -e '/^JWT_ISSUER=/p' $DotenvPath/.env)
 AUDIENCE=$(sed -n -e '/^JWT_AUDIENCE=/p' $DotenvPath/.env)
 PORT=$(sed -n -e '/^PORT=/p' $DotenvPath/.env)
 TIMEOUT_SEC=$(sed -n -e '/^TIMEOUT_SEC=/p' $DotenvPath/.env)
+RSA_PUB=`cat $DotenvPath/.env |grep -o -Pzo '(?s)RSA_PUB.*"' | tr -d '"'`
 
-docker build --progress plain --tag homework $DockerfilePath
+docker build --progress plain --tag homework-jannevalimaa $DockerfilePath
 docker run -p 8000:8000 \
+    -e "LOG_LEVEL=0" \
     -e $PORT \
     -e $ISSUER \
     -e $AUDIENCE \
     -e $SECRET \
     -e $TIMEOUT_SEC \
-    homework
+    -e "$RSA_PUB" \
+    homework-jannevalimaa

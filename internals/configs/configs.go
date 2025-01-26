@@ -1,17 +1,23 @@
 package configs
 
 import (
+	"crypto/rsa"
+	"crypto/x509"
+	"encoding/pem"
 	"errors"
+	"fmt"
 	"os"
 	"strconv"
 
 	"github.com/joho/godotenv"
+	"github.com/rs/zerolog/log"
 )
 
 type Jwt struct {
 	ApiSecret string
 	Issuer    string
 	Audience  string
+	RsaPublic *rsa.PublicKey
 }
 
 type Variables struct {
@@ -50,6 +56,12 @@ func (env *Env) resolveEnvs() error {
 	if env.Jwt.ApiSecret == "" {
 		return errors.New("Missing environment variable: API_SECRET")
 	}
+	r, err := readRsaPubKey()
+	if err != nil {
+		return err
+	}
+	env.Jwt.RsaPublic = r
+
 	env.Variables.Port = os.Getenv("PORT")
 	if env.Variables.Port == "" {
 		return errors.New("Missing environment variable: PORT")
@@ -60,7 +72,31 @@ func (env *Env) resolveEnvs() error {
 	}
 	env.Variables.Timeout = timeout
 
+	log.Debug().Interface("dict", env).Msg("Environment variables")
+
 	return nil
+}
+
+func readRsaPubKey() (*rsa.PublicKey, error) {
+	rsaPub := os.Getenv("RSA_PUB")
+	fmt.Println(rsaPub)
+	if rsaPub == "" {
+		return nil, errors.New("Missing or invalid environment variable: RSA_PUB")
+	}
+	block, _ := pem.Decode([]byte(rsaPub))
+	if block == nil {
+		return nil, errors.New("Failed to decode PEM block")
+	}
+	pubInterface, err := x509.ParsePKIXPublicKey(block.Bytes)
+	if err != nil {
+		return nil, fmt.Errorf("Failed to parse DER encoded public key: %v", err)
+	}
+	rsaPublic, ok := pubInterface.(*rsa.PublicKey)
+	if !ok {
+		return nil, errors.New("RSA_PUB is not correctly formatted rsa public key")
+	}
+
+	return rsaPublic, nil
 }
 
 // Check if .env file is in use & import variables from there.
